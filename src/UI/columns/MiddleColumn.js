@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MiddleColumn = (props) =>(
+const MiddleColumn = (props) => (
     <>
         {props.children}
     </>

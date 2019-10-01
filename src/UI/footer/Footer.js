@@ -4,9 +4,7 @@ import styles from './Footer.module.css';
 const Footer = (props) => {
     return (
         <div className={styles.footer}>
-            <div className="container">
-                <span className="text-muted">{props.text}</span>
-            </div>
+                <span className="text-muted text" style={{marginLeft:'60px'}}>{props.text}</span>
         </div>
     )
 }

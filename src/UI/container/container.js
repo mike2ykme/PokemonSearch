@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import Footer from '../footer/Footer';
 import Header from '../navbar/Header';
 import PokemonContext from '../../context/PokemonContext';
@@ -8,13 +8,6 @@ import Axios from 'axios';
 
 class Box extends React.Component {
 
-    // state = {
-    //     footerText: "Place Footer Text Here",
-    //     width: window.innerWidth,
-    //     height: window.innerHeight,
-    //     pokemonName: "mew",
-
-    // }
     state = {
         name: this.props.pokemonSearch ? this.props.pokemonSearch : "mew",
         footerText: "Place Footer Text Here",
@@ -31,7 +24,8 @@ class Box extends React.Component {
         errorText: "",
         updateDisplayedPokemon: this.updateDisplayedPokemon,
         searchButtonHandler: this.searchButtonHandler,
-        processPokemonResult: this.processPokemonResult
+        processPokemonResult: this.processPokemonResult,
+        storedPokemon: [{}],
     }
 
     processPokemonResult = (data) => {
@@ -64,9 +58,10 @@ class Box extends React.Component {
                 .then(response => {
 
                     localStorage.setItem(pokemonName, JSON.stringify(response.data));
-
-                    // this.processPokemonResult(response.data);
-                    // this.context.processPokemonResult(response.data);
+                    this.setState((state, props) => {
+                        const newPokemonNames = state.storedPokemon.slice().push(pokemonName);
+                        return {storedPokemon: newPokemonNames};
+                    });
                     this.processPokemonResult(response.data);
 
                 })
@@ -74,15 +69,13 @@ class Box extends React.Component {
                     console.log("[pokemondisplay.js", err);
                     this.setState({
                         error: true,
-                        errorText: `Unable to find a Pokemon named/numbered ${pokemonName}`,
+                        errorText: `Unable to find a Pokemon named/numbered ${pokemonName}.`,
                         isLoaded: false,
                         name: pokemonName,
                     });
                 });
         } else {
             console.log("POKEMON is CACHED");
-            // this.processPokemonResult(JSON.parse(pokemon));
-            // this.context.processPokemonResult(JSON.parse(pokemon));
             this.processPokemonResult(JSON.parse(pokemon));
         }
     }
@@ -93,19 +86,18 @@ class Box extends React.Component {
 
 
     componentDidMount() {
-        console.log("checking context", this.context);
+        const newPokemonNames = Object.keys(localStorage);
+
+        this.setState((state, props) => {
+            return {storedPokemon: newPokemonNames};
+        });
+
         window.addEventListener("resize", this.updateDimensions);
     }
 
     searchButtonHandler = (searchText) => {
         if (searchText !== "") {
             console.log("[container.js] searchButtonHandler: ", searchText);
-            // this.setState({
-            //     pokemonSearch: searchText,
-            // });
-            // this.setState({
-            //     name: searchText,
-            // });
             this.updateDisplayedPokemon(searchText);
 
         } else {
@@ -131,10 +123,10 @@ class Box extends React.Component {
         });
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log("CMD", this.context);
-        console.log("COMPONENT DID UPDATE IN CONTAINER", this.context.height);
-    }
+    // componentDidUpdate(prevProps, prevState, snapshot) {
+    //     console.log("CMD", this.context);
+    //     console.log("COMPONENT DID UPDATE IN CONTAINER", this.context.height);
+    // }
 
     static contextType = PokemonContext;
 
@@ -144,36 +136,36 @@ class Box extends React.Component {
         });
     }
 
-    updateDisplayedPokemon = (pokemonName) => {
+    // updateDisplayedPokemon = (pokemonName) => {
 
-        const pokemon = localStorage.getItem(pokemonName);
+    //     const pokemon = localStorage.getItem(pokemonName);
 
-        if (pokemon === null) {
-            console.log("NOT IN CACHE");
+    //     if (pokemon === null) {
+    //         console.log("NOT IN CACHE");
 
-            const localhostPokemon = `http://localhost:8080/pokemon/${pokemonName}`
-            this._asyncRequest = Axios.get(localhostPokemon)
-                .then(response => {
+    //         const localhostPokemon = `http://localhost:8080/pokemon/${pokemonName}`
+    //         this._asyncRequest = Axios.get(localhostPokemon)
+    //             .then(response => {
 
-                    localStorage.setItem(pokemonName, JSON.stringify(response.data));
+    //                 localStorage.setItem(pokemonName, JSON.stringify(response.data));
 
-                    this.processPokemonResult(response.data);
+    //                 this.processPokemonResult(response.data);
 
-                })
-                .catch(err => {
-                    console.log("[pokemondisplay.js", err);
-                    this.setState({
-                        error: true,
-                        errorText: `Unable to find a Pokemon named/numbered ${pokemonName}`,
-                        isLoaded: false,
-                        name: pokemonName,
-                    });
-                });
-        } else {
-            console.log("POKEMON is CACHED");
-            this.processPokemonResult(JSON.parse(pokemon));
-        }
-    }
+    //             })
+    //             .catch(err => {
+    //                 console.log("[pokemondisplay.js", err);
+    //                 this.setState({
+    //                     error: true,
+    //                     errorText: `Unable to find a Pokemon named/numbered ${pokemonName}`,
+    //                     isLoaded: false,
+    //                     name: pokemonName,
+    //                 });
+    //             });
+    //     } else {
+    //         console.log("POKEMON is CACHED");
+    //         this.processPokemonResult(JSON.parse(pokemon));
+    //     }
+    // }
 
     render() {
 
@@ -185,11 +177,12 @@ class Box extends React.Component {
                         id: this.state.id,
                         weight: this.state.weight,
                         name: this.state.name,
+                        stats: this.state.stats,
                         flavorText: this.state.flavorText,
                         selectedImage: this.state.selectedImage,
                         isLoaded: this.state.isLoaded,
                         sprites: this.state.sprites,
-                        error: false,
+                        error: this.state.error,
                         errorText: this.state.errorText,
                         height: this.state.height,
                         width: this.width,
@@ -197,6 +190,7 @@ class Box extends React.Component {
                         processPokemonResult: this.processPokemonResult,
                         updateDisplayedPokemon: this.updateDisplayedPokemon,
                         updateSelectedImageHandler: this.updateSelectedImageHandler,
+                        storedPokemon: this.storedPokemon,
                     }}>
                         <ColumnContainer />
                         <Footer text={this.state.footerText} />

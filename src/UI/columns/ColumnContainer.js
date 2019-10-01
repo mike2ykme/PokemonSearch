@@ -5,49 +5,44 @@ import RightColumn from './RightColumn';
 import PokemonDisplay from '../PokemonDisplay';
 import { Row, Col } from 'react-bootstrap';
 import PokemonContext from '../../context/PokemonContext';
-
+import StatsDisplay from '../StatsDisplay';
 
 class ColumnContainer extends React.Component {
 
     static contextType = PokemonContext;
 
-    
-    componentDidMount(){
-        console.log("CDM",this.context);
-    }
+
+    // componentDidMount() {
+    //     console.log("CDM", this.context);
+    // }
     render() {
         return (
-            <>
+            <React.Fragment>
                 <Row>
-                    {/* width:{this.state.width} */}
                     <LeftColumn>
                         <Col className="col-md-3 d-none d-md-block" style={{ backgroundColor: 'blue' }}>
                             Left Column
                         </Col>
                     </LeftColumn>
 
-
-                    {/* height:{this.state.height} */}
                     <MiddleColumn >
-                        <Col style={{ backgroundColor: 'red' }}>
-                            {/* <PokemonDisplay pokemonSearch={this.state.pokemonSearch} /> */}
+                        < Col className="col-12 col-sm-12 col-xs-12 col-md-6" style={{ backgroundColor: 'red' }}>
                             <PokemonDisplay />
                         </Col>
                     </MiddleColumn>
 
-
                     <RightColumn >
-                        <Col className="col-md-3 d-none d-md-block" style={{ backgroundColor: 'green' }}>
-                            Right Column
+                        <Col className="col-12 col-sm-12 col-md-3" style={{ backgroundColor: 'green' }}>
+                            {this.context.isLoaded && <StatsDisplay a="TEST_VALUE" />}
                         </Col>
                     </RightColumn>
                 </Row>
-                <Row>
+                {/* <Row>
                     <Col>
                         NEW ROW
                     </Col>
-                </Row>
-            </>
+                </Row> */}
+            </React.Fragment>
         )
     }
 }
