@@ -16,7 +16,7 @@ class Box extends React.Component {
         pokemonName: "mew",
         id: 151,
         weight: '40',
-        flavorText: 'Here is some flavor text for this entry',
+        flavorText: '',
         isLoaded: false,
         sprites: {},
         selectedImage: null,
@@ -26,6 +26,9 @@ class Box extends React.Component {
         searchButtonHandler: this.searchButtonHandler,
         processPokemonResult: this.processPokemonResult,
         storedPokemon: [{}],
+        baseHappiness: null,
+        captureRate: null,
+        searchHistory: [],
     }
 
     processPokemonResult = (data) => {
@@ -46,9 +49,36 @@ class Box extends React.Component {
         });
     }
 
+
+    // This seems to be adding just a number instead of an object to the array
+    addPokemonToState = (pokemon) => {
+        this.setState((state, props) => {
+            const newPokemonNames = state.storedPokemon.slice()
+            newPokemonNames.push({
+                name: pokemon.name,
+                id: pokemon.id,
+            });
+            return { storedPokemon: newPokemonNames };
+        });
+    }
+
     updateDisplayedPokemon = (pokemonName) => {
 
+        const pokemonSearch = pokemonName;
+        if (!isNaN(pokemonSearch)) {
+            // if it's a number
+            const idx = this.state.storedPokemon.findIndex((pkmn) => {
+                return pkmn.id === Number(pokemonSearch);
+            });
+
+            if (idx >= 0) {
+                pokemonName = this.state.storedPokemon[idx].name;
+            }
+        }
+        this.updateSearchHistory(pokemonName);
         const pokemon = localStorage.getItem(pokemonName);
+
+        this.updatePokemonSpecies(pokemonName);
 
         if (pokemon === null) {
             console.log("NOT IN CACHE");
@@ -57,12 +87,11 @@ class Box extends React.Component {
             this._asyncRequest = Axios.get(localhostPokemon)
                 .then(response => {
 
-                    localStorage.setItem(pokemonName, JSON.stringify(response.data));
-                    this.setState((state, props) => {
-                        const newPokemonNames = state.storedPokemon.slice().push(pokemonName);
-                        return {storedPokemon: newPokemonNames};
-                    });
+                    this.addPokemonToState(response.data);
                     this.processPokemonResult(response.data);
+
+                    // Now we need to update this to include both the pokemon
+                    // localStorage.setItem(pokemonName, JSON.stringify(response.data));
 
                 })
                 .catch(err => {
@@ -80,29 +109,78 @@ class Box extends React.Component {
         }
     }
 
-    updateDimensions = (e) => {
-        this.setState({ width: window.innerWidth, height: window.innerHeight });
+    // updateDimensions = (e) => {
+    //     this.setState({ width: window.innerWidth, height: window.innerHeight });
+    // }
+
+    updatePokemonSpecies = (pokemonSearch) => {
+        const localhostPokemon = `http://localhost:8080/pokemon-species/${pokemonSearch}`
+        Axios.get(localhostPokemon)
+            .then(response => {
+                console.log("species", response.data);
+
+
+                //Handle if it's a baby/evolution of something
+
+                // Update the flavor Text
+                let zerothElement = response.data.flavor_text_entries.filter(flavorText => {
+                    return flavorText.language.name.toLowerCase() === "en";
+                })[0];
+
+
+                console.log("capture_Rate", response.data.capture_rate);
+
+                this.setState({
+                    flavorText: zerothElement.flavor_text,
+                    baseHappiness: response.data.base_happiness,
+                    captureRate: response.data.capture_rate
+                });
+            });
     }
 
-
     componentDidMount() {
-        const newPokemonNames = Object.keys(localStorage);
-
+        const newPokemonNames = Object.keys(localStorage).map((key, index) => {
+            const pokemon = JSON.parse(localStorage.getItem(key));
+            return ({
+                name: pokemon.name,
+                id: pokemon.id,
+            });
+        });
         this.setState((state, props) => {
-            return {storedPokemon: newPokemonNames};
+            return { storedPokemon: newPokemonNames };
         });
 
-        window.addEventListener("resize", this.updateDimensions);
+        // window.addEventListener("resize", this.updateDimensions);
     }
 
     searchButtonHandler = (searchText) => {
         if (searchText !== "") {
             console.log("[container.js] searchButtonHandler: ", searchText);
-            this.updateDisplayedPokemon(searchText);
+            this.updateDisplayedPokemon(searchText.toLowerCase());
+
 
         } else {
             console.log("EMPTY STRING");
         }
+    }
+
+    updateSearchHistory = (searchText) => {
+        const newSearch = this.state.searchHistory.slice(0, 10);
+
+        if (newSearch.length > 9) {
+            newSearch.shift();
+        }
+        if (!newSearch.includes(searchText)) {
+            newSearch.push(searchText);
+
+            this.setState((state, props) => {
+                console.log("newSearch", newSearch);
+                return { searchHistory: newSearch }
+
+            });
+
+        }
+
     }
 
     processPokemonResult = (data) => {
@@ -123,11 +201,6 @@ class Box extends React.Component {
         });
     }
 
-    // componentDidUpdate(prevProps, prevState, snapshot) {
-    //     console.log("CMD", this.context);
-    //     console.log("COMPONENT DID UPDATE IN CONTAINER", this.context.height);
-    // }
-
     static contextType = PokemonContext;
 
     updateSelectedImageHandler = (image) => {
@@ -136,36 +209,6 @@ class Box extends React.Component {
         });
     }
 
-    // updateDisplayedPokemon = (pokemonName) => {
-
-    //     const pokemon = localStorage.getItem(pokemonName);
-
-    //     if (pokemon === null) {
-    //         console.log("NOT IN CACHE");
-
-    //         const localhostPokemon = `http://localhost:8080/pokemon/${pokemonName}`
-    //         this._asyncRequest = Axios.get(localhostPokemon)
-    //             .then(response => {
-
-    //                 localStorage.setItem(pokemonName, JSON.stringify(response.data));
-
-    //                 this.processPokemonResult(response.data);
-
-    //             })
-    //             .catch(err => {
-    //                 console.log("[pokemondisplay.js", err);
-    //                 this.setState({
-    //                     error: true,
-    //                     errorText: `Unable to find a Pokemon named/numbered ${pokemonName}`,
-    //                     isLoaded: false,
-    //                     name: pokemonName,
-    //                 });
-    //             });
-    //     } else {
-    //         console.log("POKEMON is CACHED");
-    //         this.processPokemonResult(JSON.parse(pokemon));
-    //     }
-    // }
 
     render() {
 
@@ -191,6 +234,10 @@ class Box extends React.Component {
                         updateDisplayedPokemon: this.updateDisplayedPokemon,
                         updateSelectedImageHandler: this.updateSelectedImageHandler,
                         storedPokemon: this.storedPokemon,
+                        captureRate: this.captureRate,
+                        baseHappiness: this.baseHappiness,
+                        searchHistory: this.state.searchHistory,
+
                     }}>
                         <ColumnContainer />
                         <Footer text={this.state.footerText} />

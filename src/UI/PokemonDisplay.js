@@ -10,16 +10,11 @@ class PokemonDisplay extends Component {
     static contextType = PokemonContext;
 
     componentDidMount() {
-        console.log("PKCONTEXT", this.context);
         const pokemonName = this.context.name;
         this.context.updateDisplayedPokemon(pokemonName)
 
 
     }
-    // componentWillUnmount() {
-        // console.log("[pokemondisplay.js", "componentWillUnmount()")
-    // }
-
 
     render() {
 

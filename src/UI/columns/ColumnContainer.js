@@ -20,19 +20,30 @@ class ColumnContainer extends React.Component {
             <React.Fragment>
                 <Row>
                     <LeftColumn>
-                        <Col className="col-md-3 d-none d-md-block" style={{ backgroundColor: 'blue' }}>
-                            Left Column
+                        <Col className="col-md-3 d-none d-md-block" >
+                            <br />
+                            Search History:
+                            <ul>
+                                {this.context.searchHistory.map((searchElement) => {
+                                    console.log("searchHistory");
+                                    return (
+                                        <li key={searchElement} style={{ cursor: 'pointer' }} onClick={() => this.context.searchButtonHandler(searchElement)}>
+                                            {searchElement}
+                                        </li>
+                                    )
+                                })}
+                            </ul>
                         </Col>
                     </LeftColumn>
 
                     <MiddleColumn >
-                        < Col className="col-12 col-sm-12 col-xs-12 col-md-6" style={{ backgroundColor: 'red' }}>
+                        < Col className="col-12 col-sm-12 col-xs-12 col-md-6" >
                             <PokemonDisplay />
                         </Col>
                     </MiddleColumn>
 
                     <RightColumn >
-                        <Col className="col-12 col-sm-12 col-md-3" style={{ backgroundColor: 'green' }}>
+                        <Col className="col-12 col-sm-12 col-md-3" >
                             {this.context.isLoaded && <StatsDisplay a="TEST_VALUE" />}
                         </Col>
                     </RightColumn>
