@@ -24,14 +24,12 @@ class ColumnContainer extends React.Component {
                             <br />
                             Search History:
                             <ul>
-                                {this.context.searchHistory.map((searchElement) => {
-                                    console.log("searchHistory");
-                                    return (
-                                        <li key={searchElement} style={{ cursor: 'pointer' }} onClick={() => this.context.searchButtonHandler(searchElement)}>
-                                            {searchElement}
-                                        </li>
-                                    )
-                                })}
+                                {this.context.searchHistory.map((searchElement) => (
+                                    <li key={searchElement} style={{ cursor: 'pointer' }} onClick={() => this.context.searchButtonHandler(searchElement)}>
+                                        {searchElement}
+                                    </li>
+                                ))
+                                }
                             </ul>
                         </Col>
                     </LeftColumn>

@@ -10,7 +10,7 @@ class Box extends React.Component {
 
     state = {
         name: this.props.pokemonSearch ? this.props.pokemonSearch : "mew",
-        footerText: "Place Footer Text Here",
+        footerText: "Data retrieved from <a href='https://pokeapi.co'>https://pokeapi.co</a>",
         width: window.innerWidth,
         height: window.innerHeight,
         pokemonName: "mew",
@@ -29,6 +29,13 @@ class Box extends React.Component {
         baseHappiness: null,
         captureRate: null,
         searchHistory: [],
+        useLocalApi: true,
+    }
+
+    apiSourceHandler = () => {
+        this.setState((state, props) => {
+            return { useLocalApi: !state.useLocalApi };
+        });
     }
 
     processPokemonResult = (data) => {
@@ -83,14 +90,19 @@ class Box extends React.Component {
         if (pokemon === null) {
             console.log("NOT IN CACHE");
 
-            const localhostPokemon = `http://localhost:8080/pokemon/${pokemonName}`
-            this._asyncRequest = Axios.get(localhostPokemon)
+            // const localhostPokemon = `http://localhost:8080/pokemon/${pokemonName}`
+            // const pokeApi = `https://pokeapi.co/api/v2/pokemon/${pokemonSearch}`;
+            const apiHost = (this.state.useLocalApi) ?
+                `http://localhost:8080/pokemon/${pokemonName}` :
+                `https://pokeapi.co/api/v2/pokemon/${pokemonSearch}`;
+            Axios.get(apiHost)
                 .then(response => {
 
                     this.addPokemonToState(response.data);
                     this.processPokemonResult(response.data);
 
                     // Now we need to update this to include both the pokemon
+                    // Removed local storage because we might run into quota issues
                     // localStorage.setItem(pokemonName, JSON.stringify(response.data));
 
                 })
@@ -109,16 +121,18 @@ class Box extends React.Component {
         }
     }
 
-    // updateDimensions = (e) => {
-    //     this.setState({ width: window.innerWidth, height: window.innerHeight });
-    // }
-
     updatePokemonSpecies = (pokemonSearch) => {
-        const localhostPokemon = `http://localhost:8080/pokemon-species/${pokemonSearch}`
-        Axios.get(localhostPokemon)
+
+        // const localhostPokemon = `http://localhost:8080/pokemon-species/${pokemonSearch}`
+
+        // const pokeApi = `https://pokeapi.co/api/v2/pokemon-species/${pokemonSearch}`;
+        const apiHost = (this.state.useLocalApi) ?
+        `http://localhost:8080/pokemon-species/${pokemonSearch}` :
+            `https://pokeapi.co/api/v2/pokemon-species/${pokemonSearch}`;
+        Axios.get(apiHost)
             .then(response => {
                 console.log("species", response.data);
-
+                // 3c41cc3d4
 
                 //Handle if it's a baby/evolution of something
 
@@ -214,7 +228,11 @@ class Box extends React.Component {
 
         return (
             <PokemonContext.Provider value={{ width: this.state.width, height: this.state.height }}>
-                <Header click={this.searchButtonHandler} />
+                <Header
+                    click={this.searchButtonHandler}
+                    apiSwitchHandler={this.apiSourceHandler}
+                    isApiLocal={this.state.useLocalApi}
+                />
                 <Container fluid="true">
                     <PokemonContext.Provider value={{
                         id: this.state.id,
@@ -237,6 +255,7 @@ class Box extends React.Component {
                         captureRate: this.captureRate,
                         baseHappiness: this.baseHappiness,
                         searchHistory: this.state.searchHistory,
+                        // apiSourceHandler: this.apiSourceHandler,
 
                     }}>
                         <ColumnContainer />

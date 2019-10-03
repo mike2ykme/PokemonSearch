@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import { Nav, Form, FormControl, Button } from 'react-bootstrap';
 
+
 // className="d-none d-lg-block"
 class Header extends React.Component {
     state = {
@@ -20,8 +21,8 @@ class Header extends React.Component {
             e.preventDefault()
             console.log('value', e.target.value);
             this.props.click(this.state.searchText);
-            this.setState((state, props)=>{
-                return {searchText:""}
+            this.setState((state, props) => {
+                return { searchText: "" }
             });
         }
     }
@@ -34,6 +35,8 @@ class Header extends React.Component {
                         {/* <Nav.Link href="#home" >Home</Nav.Link>
                         <Nav.Link href="#features">Features</Nav.Link>
                         <Nav.Link href="#pricing">Pricing</Nav.Link> */}
+
+
                     </Nav>
                     <Form inline>
                         <FormControl onKeyDown={this.onKeyChangeHandler} type="text" onChange={this.searchChangeHandler} value={this.state.searchText} placeholder="Search" className="mr-sm-2" />
@@ -42,6 +45,13 @@ class Header extends React.Component {
                             this.state.searchText = "";
                         }
                         } variant="outline-info">Search</Button>
+                        <div style={{width:"8px"}}></div>
+                        <Button
+                            onClick={this.props.apiSwitchHandler}
+                            variant="outline-info"
+                        >
+                            use {this.props.isApiLocal ? 'PokeAPI' : 'LocalApi'} API
+                        </Button>
                     </Form>
                 </Navbar>
             </React.Fragment>
@@ -50,3 +60,4 @@ class Header extends React.Component {
 }
 
 export default Header;
+
