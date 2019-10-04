@@ -29,7 +29,7 @@ class Box extends React.Component {
         baseHappiness: null,
         captureRate: null,
         searchHistory: [],
-        useLocalApi: true,
+        useLocalApi: false,
     }
 
     apiSourceHandler = () => {
