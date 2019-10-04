@@ -123,9 +123,6 @@ class Box extends React.Component {
 
     updatePokemonSpecies = (pokemonSearch) => {
 
-        // const localhostPokemon = `http://localhost:8080/pokemon-species/${pokemonSearch}`
-
-        // const pokeApi = `https://pokeapi.co/api/v2/pokemon-species/${pokemonSearch}`;
         const apiHost = (this.state.useLocalApi) ?
         `http://localhost:8080/pokemon-species/${pokemonSearch}` :
             `https://pokeapi.co/api/v2/pokemon-species/${pokemonSearch}`;
