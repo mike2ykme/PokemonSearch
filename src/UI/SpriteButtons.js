@@ -6,9 +6,6 @@ const SpriteButtons = (props) => {
     return (
         <>
             <Row >
-                {/* <Col className="d-none d-md-block" md={4}>
-                    I should be hidden on small screens
-                    </Col> */}
                 <Col xs={12} md={4}>
                     <div>FRONT: <br />
                         <ButtonGroup aria-label="Front">
@@ -33,9 +30,6 @@ const SpriteButtons = (props) => {
 
                 </Col>
             </Row>
-            {/* <Col className="d-none d-md-block" md={4}>
-                I should be hidden on small screens
-                    </Col> */}
             {
                 (props.sprites.back_female || props.sprites.back_shiny_female) && <Row>
                     <Col xs={12} md={4}>
@@ -53,9 +47,7 @@ const SpriteButtons = (props) => {
                 </Row>
             }
             <Row >
-                {/* <Col className="d-none d-md-block" md={4}>
-                    I should be hidden on small screens
-                    </Col> */}
+
                 <Col xs={12} md={4}>
                     <div>BACK: <br />
                         <ButtonGroup aria-label="Back">

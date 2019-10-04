@@ -11,10 +11,6 @@ class ColumnContainer extends React.Component {
 
     static contextType = PokemonContext;
 
-
-    // componentDidMount() {
-    //     console.log("CDM", this.context);
-    // }
     render() {
         return (
             <React.Fragment>
@@ -46,11 +42,6 @@ class ColumnContainer extends React.Component {
                         </Col>
                     </RightColumn>
                 </Row>
-                {/* <Row>
-                    <Col>
-                        NEW ROW
-                    </Col>
-                </Row> */}
             </React.Fragment>
         )
     }

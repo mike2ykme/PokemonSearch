@@ -56,8 +56,6 @@ class Box extends React.Component {
         });
     }
 
-
-    // This seems to be adding just a number instead of an object to the array
     addPokemonToState = (pokemon) => {
         this.setState((state, props) => {
             const newPokemonNames = state.storedPokemon.slice()
@@ -87,53 +85,39 @@ class Box extends React.Component {
 
         this.updatePokemonSpecies(pokemonName);
 
-        if (pokemon === null) {
-            console.log("NOT IN CACHE");
 
-            // const localhostPokemon = `http://localhost:8080/pokemon/${pokemonName}`
-            // const pokeApi = `https://pokeapi.co/api/v2/pokemon/${pokemonSearch}`;
-            const apiHost = (this.state.useLocalApi) ?
-                `http://localhost:8080/pokemon/${pokemonName}` :
-                `https://pokeapi.co/api/v2/pokemon/${pokemonSearch}`;
-            Axios.get(apiHost)
-                .then(response => {
+        const apiHost = (this.state.useLocalApi) ?
+            `http://localhost:8080/pokemon/${pokemonName}` : `https://pokeapi.co/api/v2/pokemon/${pokemonSearch}`;
+            
+        Axios.get(apiHost)
+            .then(response => {
 
-                    this.addPokemonToState(response.data);
-                    this.processPokemonResult(response.data);
+                this.addPokemonToState(response.data);
+                this.processPokemonResult(response.data);
 
-                    // Now we need to update this to include both the pokemon
-                    // Removed local storage because we might run into quota issues
-                    // localStorage.setItem(pokemonName, JSON.stringify(response.data));
-
-                })
-                .catch(err => {
-                    console.log("[pokemondisplay.js", err);
-                    this.setState({
-                        error: true,
-                        errorText: `Unable to find a Pokemon named/numbered ${pokemonName}.`,
-                        isLoaded: false,
-                        name: pokemonName,
-                    });
+            })
+            .catch(err => {
+                console.log("[pokemondisplay.js", err);
+                this.setState({
+                    error: true,
+                    errorText: `Unable to find a Pokemon named/numbered ${pokemonName}.`,
+                    isLoaded: false,
+                    name: pokemonName,
                 });
-        } else {
-            console.log("POKEMON is CACHED");
-            this.processPokemonResult(JSON.parse(pokemon));
-        }
+            });
+
     }
 
     updatePokemonSpecies = (pokemonSearch) => {
 
         const apiHost = (this.state.useLocalApi) ?
-        `http://localhost:8080/pokemon-species/${pokemonSearch}` :
-            `https://pokeapi.co/api/v2/pokemon-species/${pokemonSearch}`;
+            `http://localhost:8080/pokemon-species/${pokemonSearch}` : `https://pokeapi.co/api/v2/pokemon-species/${pokemonSearch}`;
+
         Axios.get(apiHost)
             .then(response => {
                 console.log("species", response.data);
                 // 3c41cc3d4
 
-                //Handle if it's a baby/evolution of something
-
-                // Update the flavor Text
                 let zerothElement = response.data.flavor_text_entries.filter(flavorText => {
                     return flavorText.language.name.toLowerCase() === "en";
                 })[0];
@@ -160,15 +144,12 @@ class Box extends React.Component {
         this.setState((state, props) => {
             return { storedPokemon: newPokemonNames };
         });
-
-        // window.addEventListener("resize", this.updateDimensions);
     }
 
     searchButtonHandler = (searchText) => {
         if (searchText !== "") {
             console.log("[container.js] searchButtonHandler: ", searchText);
             this.updateDisplayedPokemon(searchText.toLowerCase());
-
 
         } else {
             console.log("EMPTY STRING");
@@ -252,7 +233,6 @@ class Box extends React.Component {
                         captureRate: this.captureRate,
                         baseHappiness: this.baseHappiness,
                         searchHistory: this.state.searchHistory,
-                        // apiSourceHandler: this.apiSourceHandler,
 
                     }}>
                         <ColumnContainer />

@@ -10,13 +10,12 @@ class Header extends React.Component {
     }
 
     searchChangeHandler = (e) => {
-        // console.log(e.target.value);
         this.setState({
             searchText: e.target.value,
         });
     }
+
     onKeyChangeHandler = (e) => {
-        // e.preventDefault();
         if (e.keyCode === 13) {
             e.preventDefault()
             console.log('value', e.target.value);
@@ -26,16 +25,13 @@ class Header extends React.Component {
             });
         }
     }
+
     render() {
         return (
             <React.Fragment>
                 <Navbar bg="dark" variant="dark" >
                     <Navbar.Brand href="#home" >Navbar</Navbar.Brand>
                     <Nav className="mr-auto" >
-                        {/* <Nav.Link href="#home" >Home</Nav.Link>
-                        <Nav.Link href="#features">Features</Nav.Link>
-                        <Nav.Link href="#pricing">Pricing</Nav.Link> */}
-
 
                     </Nav>
                     <Form inline>
